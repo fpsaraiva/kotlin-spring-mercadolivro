@@ -1,12 +1,13 @@
 package com.mercadolivro.controller
 
 import com.mercadolivro.controller.request.PostCustomerRequest
+import com.mercadolivro.controller.request.PutCustomerRequest
 import com.mercadolivro.model.CustomerModel
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("customer")
+@RequestMapping("customers")
 class CustomerController {
 
     val customers = mutableListOf<CustomerModel>()
@@ -30,8 +31,21 @@ class CustomerController {
 
     @GetMapping("/{id}")
     fun getCustomer(@PathVariable id: String): CustomerModel {
-        return customers.filter {
-            it.id == id
-        }.first()
+        return customers.filter { it.id == id        }.first()
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateCustomer(@PathVariable id: String, @RequestBody customer: PutCustomerRequest) {
+        customers.filter { it.id == id }.first().let{
+            it.name = customer.name
+            it.email = customer.email
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteCustomer(@PathVariable id: String) {
+        customers.removeIf { it.id == id }
     }
 }
