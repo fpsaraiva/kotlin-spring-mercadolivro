@@ -31,7 +31,7 @@ class CustomerServiceTest {
     private lateinit var customerService: CustomerService
 
     @Test
-    fun `show return all customers`() {
+    fun `should return all customers`() {
         //cenario
         val fakeCustomers = listOf(buildCustomer(), buildCustomer())
         every { customerRepository.findAll() } returns fakeCustomers
@@ -43,6 +43,22 @@ class CustomerServiceTest {
         assertEquals(fakeCustomers, customers)
         verify(exactly = 1) { customerRepository.findAll() }
         verify(exactly = 0) { customerRepository.findByNameContaining(any()) }
+    }
+
+    @Test
+    fun `should return specific customer when name is informed`() {
+        //cenario
+        val name = UUID.randomUUID().toString()
+        val fakeCustomers = listOf(buildCustomer(), buildCustomer())
+        every { customerRepository.findByNameContaining(name) } returns fakeCustomers
+
+        //acao
+        val customers = customerService.getAll(name)
+
+        //validacao
+        assertEquals(fakeCustomers, customers)
+        verify(exactly = 0) { customerRepository.findAll() }
+        verify(exactly = 1) { customerRepository.findByNameContaining(name) }
     }
 
     fun buildCustomer(
